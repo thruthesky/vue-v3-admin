@@ -20,7 +20,7 @@
         <router-link to="/admin/translations">Translations</router-link>
 
         <p v-if="app.loggedIn">
-          Current user Email: {{ $store.state.user.email }} |
+          Current user Email: `Email |
           <span v-if="app.isAdmin">You are an ADMIN!</span>
         </p>
       </div>
@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import LoginForm from "../components/LoginForm.vue";
+import LoginForm from "./components/LoginForm.vue";
 @Options({
   components: {
     LoginForm
