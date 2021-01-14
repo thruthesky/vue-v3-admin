@@ -30,7 +30,7 @@ export interface ApiUpdateProfile extends ApiUser {
 
 export class Api {
   static store = reactive({
-    user: null as any,
+    user: null as any
   });
   static get user() {
     return this.store.user;
@@ -103,6 +103,7 @@ export class Api {
 
   static async profileUpdate(req: ApiUpdateProfile): Promise<ApiUser> {
     req.route = "user.profileUpdate";
+    console.log("req:", req);
     const re = await this.request(req);
     this.saveUser(re);
     return this.user;

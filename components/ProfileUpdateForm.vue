@@ -19,7 +19,7 @@
 import { Vue, Options } from "vue-class-component";
 import { Api, ApiUpdateProfile } from "../services/api.service";
 @Options({
-  emits: ["success", "error"],
+  emits: ["success", "error"]
 })
 export default class ProfileUpdateForm extends Vue {
   form: ApiUpdateProfile = {} as ApiUpdateProfile;
