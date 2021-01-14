@@ -1,30 +1,36 @@
 import axios from "axios";
 import { reactive, ref } from "vue";
 
+export interface ApiUser {
+  ID?: string;
+  session_id?: string;
+  user_email?: string;
+  user_pass?: string;
+  first_name?: string;
+  last_name?: string;
+  nickname?: string;
+  profile_photo_url?: string;
+}
+
 export interface ApiRegister {
   route?: "user.register";
-  user_email: string;
-  user_pass: string;
-  nickname?: string;
 }
 
 export interface ApiLogin {
   route?: "user.login";
-  user_email?: string;
-  user_pass?: string;
-}
-
-export interface ApiUser {
-  user_email: string;
 }
 
 export interface ApiProfile extends ApiUser {
   route?: "user.profile";
 }
 
+export interface ApiUpdateProfile extends ApiUser {
+  route?: "user.profileUpdate";
+}
+
 export class Api {
   static store = reactive({
-    user: null as any
+    user: null as any,
   });
   static get user() {
     return this.store.user;
@@ -57,6 +63,10 @@ export class Api {
   static async request(req: any) {
     console.log("req: ", req);
     // todo: add session id
+    if (this.loggedIn) {
+      req.session_id = this.user.session_id;
+    }
+
     const res = await axios.post(
       "http://127.0.0.1/wordpress/v3/index.php",
       null,
@@ -78,7 +88,7 @@ export class Api {
   static async register(req: ApiRegister): Promise<ApiUser> {
     req.route = "user.register";
     const re = await this.request(req);
-    console.log("request result: ", re);
+    // console.log("request result: ", re);
     this.saveUser(re);
     return this.user;
   }
@@ -86,7 +96,14 @@ export class Api {
   static async login(req: ApiLogin): Promise<ApiUser> {
     req.route = "user.login";
     const re = await this.request(req);
-    console.log("login request result: ", re);
+    // console.log("login request result: ", re);
+    this.saveUser(re);
+    return this.user;
+  }
+
+  static async profileUpdate(req: ApiUpdateProfile): Promise<ApiUser> {
+    req.route = "user.profileUpdate";
+    const re = await this.request(req);
     this.saveUser(re);
     return this.user;
   }
@@ -94,7 +111,7 @@ export class Api {
   static saveUser(user: ApiUser) {
     this.store.user = user;
     const json = JSON.stringify(user);
-    console.log("json:", json);
+    // console.log("json:", json);
     localStorage.setItem("user", json);
   }
   static logout() {
