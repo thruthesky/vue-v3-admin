@@ -113,72 +113,22 @@ export default class Categories extends Vue {
 
   created() {
     this.fetchCategories();
-
-    // this.textChanges.pipe(debounceTime(400)).subscribe((data: any) => {
-    //   this.onSave(data);
-    // });
   }
 
   async fetchCategories() {
-    // if (this.fetchingCategories) return;
-    // this.fetchingCategories = true;
-
-    // const snapshot = await this.categoriesCol.get();
-    // snapshot.docs.forEach((doc) => {
-    //   this.categories.push(doc.data());
-    // });
-
-    // this.fetchingCategories = false;
+    console.log('Categories');
   }
 
   async onCreate() {
-    // const docRef = this.categoriesCol.doc(this.newCategory.id);
-    // console.log(this.newCategory);
-    // try {
-    //   await docRef.set(this.newCategory);
-    //   this.categories.push(Object.assign({}, this.newCategory));
-    //   this.newCategory.id = "";
-    //   this.newCategory.title = "";
-    //   this.newCategory.description = "";
-    //   this.app.alert("Category created!");
-    // } catch (e) {
-    //   this.app.error(e);
-    // }
+    return;
   }
 
   async onSave(category: any) {
-    // const i = this.categories.findIndex((cat) => cat.id == category.id);
-    // if (this.categories[i]["loading"]) return;
-    // this.categories[i]["loading"] = "saving";
-
-    // try {
-    //   await this.categoriesCol.doc(category.id).update({
-    //     title: category.title ?? "",
-    //     description: category.description ?? "",
-    //   });
-    //   setTimeout(() => {
-    //     this.categories[i]["loading"] = "saved";
-
-    //     setTimeout(() => {
-    //       delete this.categories[i]["loading"];
-    //     }, 500);
-    //   }, 500);
-    // } catch (e) {
-    //   this.app.error(e);
-    // }
+    return;
   }
 
   async onDelete(id: string) {
-    // const conf = confirm("Delete Category?");
-    // if (!conf) return;
-    // try {
-    //   await this.categoriesCol.doc(id).delete();
-    //   const i = this.categories.findIndex((cat) => cat.id == id);
-    //   this.categories.splice(i, 1);
-    //   this.app.alert("Category " + id + " deleted!");
-    // } catch (e) {
-    //   this.app.error(e);
-    // }
+    return;
   }
 }
 </script>

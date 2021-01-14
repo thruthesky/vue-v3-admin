@@ -79,6 +79,7 @@ export default class Users extends Vue {
   uid: any = "";
 
   search() {
+    console.log('Users');
     this.users = [];
     this.noMoreUsers = false;
     this.lastSnapshot = null;
@@ -90,60 +91,18 @@ export default class Users extends Vue {
   }
 
   async fetchUser() {
-    // const snapshot = await this.userCol.doc(this.uid).get();
-    // if (snapshot.exists) {
-    //   const data: any = {};
-    //   const snapshotData = snapshot.data();
-    //   data["uid"] = snapshot.id;
-    //   Object.assign(data, snapshotData);
-    //   this.users.push(data);
-    //   this.fetchPublicData(snapshot.id);
-    // }
-    return [];
+    return;
   }
 
   async fetchUsers() {
-    // if (this.fetching) return;
-    // if (this.noMoreUsers) return;
-    // this.fetching = true;
-    // let q = this.userCol.limit(this.limit);
-    // if (this.lastSnapshot) {
-    //   q = q.startAfter(this.lastSnapshot);
-    // }
-
-    // const snapshot = await q.get();
-
-    // this.fetching = false;
-    // this.noMoreUsers = snapshot.size < this.limit;
-
-    // for (const docSnapshot of snapshot.docs) {
-    //   this.lastSnapshot = docSnapshot;
-    //   const data = docSnapshot.data();
-    //   data["uid"] = docSnapshot.id;
-    //   this.fetchPublicData(docSnapshot.id);
-    //   this.users.push(data);
-    // }
-    return [];
+    return;
   }
 
   async fetchPublicData(uid: string) {
-    // const docRef = this.publicCol.doc(uid);
-    // try {
-    //   const res = await docRef.get();
-    //   const i = this.users.findIndex((user) => user.uid == uid);
-    //   if (res.exists) {
-    //     Object.assign(this.users[i], res.data());
-    //   }
-    // } catch (e) {
-    //   console.log(e);
-    // }
-    return {};
+    return;
   }
 
   async created() {
-    // const uid = this.$router.currentRoute.value.params["uid"];
-    // if (uid != "all") this.uid = uid;
-    // this.search();
     window.addEventListener("scroll", this.handleScroll);
   }
 
@@ -158,12 +117,7 @@ export default class Users extends Vue {
   }
 
   onDelete(uid: string) {
-    // console.log(uid);
-    // try {
-    //   (this.$data as any).app.userDelete(uid);
-    // } catch (e) {
-    //   console.log(e);
-    // }
+    return;
   }
   onDeleteSelectedUsers() {
     const conf = confirm("Delete Selected Users?");

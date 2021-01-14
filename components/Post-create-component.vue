@@ -88,11 +88,6 @@ export default class PostsCreateComponent extends Vue {
     console.log('post-create-component')
   }
 
-  /**
-   * Creates new post
-   *
-   * TODO: add files.
-   */
   async onCreate() {
     this.newPostData.title = "";
     this.newPostData.content = "";

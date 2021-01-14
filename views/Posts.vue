@@ -109,60 +109,23 @@ export default class Posts extends Vue {
   noMorePosts = false;
 
   async created() {
-    // const cat = this.$route.params.category as any;
-    // if (cat != "all") this.search.category = cat;
-    // this.fetchPosts();
-    // this.fetchCategories();
-    // window.addEventListener("scroll", this.handleScroll);
+    this.fetchPosts();
+    this.fetchCategories();
+    window.addEventListener("scroll", this.handleScroll);
   }
 
   async fetchCategories() {
-    // if (this.fetchingCategories) return;
-    // this.fetchingCategories = true;
-    // const snapshot = await this.categoriesCol.get();
-    // snapshot.docs.forEach((doc) => {
-    //   this.categories.push(doc.id);
-    // });
-
-    // this.fetchingCategories = false;
+    console.log('fetch categories');
   }
 
   onSearch() {
-    // console.log(this.search);
     this.posts = [];
     this.noMorePosts = false;
     this.fetchPosts();
   }
 
   async fetchPosts() {
-    return;
-    // if (this.fetching) return;
-    // if (this.noMorePosts) return;
-    // this.fetching = true;
-
-    // let q = this.postsCol.limit(this.limit);
-    // /// category filter
-    // if (this.search.category)
-    //   q = q.where("category", "==", this.search.category);
-    // /// uid filter
-    // if (this.search.uid) q = q.where("uid", "==", this.search.uid);
-
-    // q = q.orderBy("createdAt", "desc");
-
-    // if (this.posts.length) {
-    //   q = q.startAfter(this.posts[this.posts.length - 1]["createdAt"]);
-    // }
-
-    // const snapshot = await q.get();
-    // this.fetching = false;
-    // console.log("Snapshot size:", snapshot.size);
-    // this.noMorePosts = snapshot.size < this.limit;
-
-    // for (const docSnapshot of snapshot.docs) {
-    //   const data = docSnapshot.data();
-    //   data["id"] = docSnapshot.id;
-    //   this.posts.push(data);
-    // }
+    console.log('Posts');
   }
 
   handleScroll(e: any) {
@@ -183,7 +146,6 @@ export default class Posts extends Vue {
   }
 
   onPostCreated(post: any) {
-    // console.log('onPostCreated', post);
     this.posts.unshift(post);
   }
 
@@ -197,13 +159,8 @@ export default class Posts extends Vue {
 
     if (!conf) return;
 
-    // this.selectedPostIDs.forEach((id) => {
-    //   this.postsCol.doc(id).delete();
-    //   this.onDeleted(id);
-    // });
-
     this.selectedPostIDs = [];
-    alert("Selected Posts deleted!");
+    return;
   }
 }
 </script>

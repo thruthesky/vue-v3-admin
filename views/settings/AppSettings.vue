@@ -44,33 +44,14 @@ export default class AppSettings extends Vue {
   }
 
   onSubmit() {
-    // this.col.doc("app").set(
-    //   {
-    //     [this.form.field]: this.form.value
-    //   },
-    //   { merge: true }
-    // );
-    // this.form = {};
     return;
   }
 
   onUpdate(field: string) {
-    // this.col.doc("app").set(
-    //   {
-    //     [field]: this.settings[field]
-    //   },
-    //   { merge: true }
-    // );
     return;
   }
 
   onDelete(field: string) {
-    // this.col.doc("app").set(
-    //   {
-    //     [field]: firebase.firestore.FieldValue.delete()
-    //   },
-    //   { merge: true }
-    // );
     return;
   }
 }

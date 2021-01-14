@@ -154,139 +154,38 @@ export default class Categories extends Vue {
 
   async fetchTranslations() {
     this.fetchingTranslations = true;
-
-    // const res = await this.translationsCol.onSnapshot((snapshots) => {
-    //   this.translations = {};
-
-    //   snapshots.docs.forEach((doc) => {
-    //     const lc = doc.id;
-    //     if (!this.languageCodes.includes(lc)) this.languageCodes.push(lc);
-    //     const data = doc.data();
-    //     let codes = Object.keys(data);
-    //     codes = codes.sort();
-    //     codes.forEach((code) => {
-    //       if (!this.translations[code]) this.translations[code] = {};
-    //       Object.assign(this.translations[code], { [lc]: data[code] });
-    //     });
-    //   });
-    // });
+    console.log("Translations");
   }
 
   async addNewLanguageCode() {
     if (!this.newLanguangeCode) return;
-
-    // const keys = Object.keys(this.translations);
-    // const data: any = {};
-    // keys.forEach((key) => {
-    //   data[key] = "";
-    // });
-
-    // try {
-    //   await this.translationsCol.doc(this.newLanguangeCode).set(data);
-    //   this.languageCodes.push(this.newLanguangeCode);
-    //   this.newLanguangeCode = "";
-    //   alert("New language code added!");
-    // } catch (e) {
-    //   this.app.error(e);
-    // }
+    return;
   }
 
   onDelete(translationCode: string) {
-    // const conf = confirm("Delete translation for " + translationCode + "?");
-    // if (!conf) return;
-
-    // this.languageCodes.forEach(async (lc) => {
-    //   try {
-    //     this.translationsCol.doc(lc).update({
-    //       [translationCode]: firebase.firestore.FieldValue.delete(),
-    //     });
-    //     delete this.translations[translationCode];
-    //   } catch (e) {
-    //     this.app.error(e);
-    //   }
-    // });
-    // alert("translation for " + translationCode + " deleted!");
-
-    console.log("Translations");
+    const conf = confirm("Delete translation for " + translationCode + "?");
+    if (!conf) return;
+    return;
   }
 
   onAddNewTranslationCode() {
-    // if (!this.newTranslationCode) {
-    //   return this.app.error("Please enter translation code");
-    // }
+    if (!this.newTranslationCode) {
+      return alert("Please enter translation code");
+    }
 
-    // if (this.translations[this.newTranslationCode]) {
-    //   return this.app.error("translation code already exists");
-    // }
+    if (this.translations[this.newTranslationCode]) {
+      return alert("translation code already exists");
+    }
 
-    // this.languageCodes.forEach(async (lc) => {
-    //   try {
-    //     await this.translationsCol
-    //       .doc(lc)
-    //       .set(
-    //         { [this.newTranslationCode]: this.newTranslationTexts[lc] ?? "" },
-    //         { merge: true }
-    //       );
-
-    //     this.newTranslationCode = "";
-    //     this.newTranslationTexts = {};
-    //   } catch (e) {
-    //     this.app.error(e);
-    //   }
-    // });
-
-    console.log("Translations");
+    return;
   }
 
   onUpdateTranslationCode(code: string, newCode: string) {
-    // if (this.translations[newCode]) {
-    //   return this.app.error("translation code already exists");
-    // }
-
-    // this.languageCodes.forEach(async (lc) => {
-    //   try {
-    //     await this.translationsCol.doc(lc).set(
-    //       {
-    //         [code]: firebase.firestore.FieldValue.delete(),
-    //         [newCode]: this.translations[code][lc] ?? "",
-    //       },
-    //       { merge: true }
-    //     );
-
-    //     setTimeout(() => {
-    //       this.translations[newCode]["loading"] = "saved";
-    //       setTimeout(() => {
-    //         delete this.translations[newCode]["loading"];
-    //       }, 500);
-    //     }, 500);
-    //   } catch (e) {
-    //     this.app.error(e);
-    //   }
-    // });
-
-    console.log("Translations");
+    return;
   }
 
   async saveText(code: string, lc: string) {
-    // if (this.translations[code]["loading"]) return;
-    // this.translations[code]["loading"] = "saving";
-
-    // try {
-    //   await this.translationsCol
-    //     .doc(lc)
-    //     .set({ [code]: this.translations[code][lc] ?? "" }, { merge: true });
-
-    //   setTimeout(() => {
-    //     this.translations[code]["loading"] = "saved";
-    //     setTimeout(() => {
-    //       delete this.translations[code]["loading"];
-    //     }, 500);
-    //   }, 500);
-    // } catch (e) {
-    //   this.app.error(e);
-    // }
-
-    console.log("Translations");
+    return;
   }
 }
 </script>

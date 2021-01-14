@@ -37,33 +37,20 @@ import { Vue } from "vue-class-component";
 
 export default class CategorySettings extends Vue {
   category: any = {
-    "no-of-posts-per-fetch": 20
+    "no-of-posts-per-fetch": 20,
   };
   fetchingCategories = false;
 
+  created() {
+    this.fetchCategory();
+  }
+  
   async fetchCategory() {
-    // const doc = this.col.doc(this.category.id);
-    // const snapshot = await doc.get();
-    // Object.assign(this.category, snapshot.data());
-    // console.log(this.category);
-    console.log('Category settings');
+    console.log("Category settings");
   }
 
-  created() {
-    // this.category.id = this.$router.currentRoute.value.params["category"];
-    // this.fetchCategory();
-    console.log('Category settings');
-  }
   async onSave() {
-    // try {
-    //   await this.col.doc(this.category.id).set(this.category, { merge: true });
-    //   alert(
-    //     "Settings for " + this.category.id + " category successfully updated"
-    //   );
-    // } catch (e) {
-    //   alert(e);
-    // }
-    console.log('Category settings');
+    return;
   }
 }
 </script>

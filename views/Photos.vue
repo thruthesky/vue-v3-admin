@@ -46,35 +46,7 @@ export default class Posts extends Vue {
   }
 
   async fetchImages() {
-    console.log('fetch');
-    // if (this.loading) return;
-    // if (this.noMorePhotos) return;
-
-    // this.loading = true;
-    // const folderRef = this.storageRef.child(this.path);
-    // const options: any = {
-    //   maxResults: 20
-    // };
-    // if (this.nextPageToken) options["pageToken"] = this.nextPageToken;
-    // const res = await folderRef.list(options);
-
-    // this.loading = false;
-    // if (!res.items || res.items.length < this.limit) {
-    //   this.noMorePhotos = true;
-    // }
-    // this.nextPageToken = res.nextPageToken;
-
-    // res.items.forEach(async (item) => {
-    //   const data = {
-    //     url: "",
-    //     uid: ""
-    //   };
-    //   data.url = await item.getDownloadURL();
-    //   const metaData = await item.getMetadata();
-    //   Object.assign(data, metaData.customMetadata);
-    //   console.log(data);
-    //   this.photos.push(data);
-    // });
+    console.log('Photos');
   }
 
   handleScroll(e: any) {
@@ -88,17 +60,7 @@ export default class Posts extends Vue {
   }
 
   async onClickDelete(url: string) {
-    console.log('delete');
-    // url = (this.$data as any).app.getStorageFileFromUrl(url, this.path);
-    // try {
-    //   await (this.$data as any).app.fileDelete(url);
-    //   const pos = this.photos.findIndex((e) => e.includes(url.split("/")[1]));
-    //   this.photos.splice(pos, 1);
-
-    //   (this.$data as any).app.alert("success file deletion.");
-    // } catch (e) {
-    //   (this.$data as any).app.error(e);
-    // }
+    return;
   }
 }
 </script>
