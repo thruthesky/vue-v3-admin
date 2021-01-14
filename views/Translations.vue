@@ -121,15 +121,13 @@
 import { Vue } from "vue-class-component";
 import { Subject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
-import { AppService } from "../services/app.service";
 
 export default class Categories extends Vue {
-  app = new AppService();
   fetchingTranslations = false;
 
   newLanguangeCode = "";
   newTranslationCode = "";
-  newTranslationTexts: any = {};
+  newTranslationTexts = {};
 
   languageCodes: string[] = [];
   translations: {
@@ -189,4 +187,3 @@ export default class Categories extends Vue {
   }
 }
 </script>
-

@@ -31,7 +31,13 @@
             />
           </td>
           <td>
-            <button class="btn btn-success w-100" type="button" @click="onCreate">Add Category</button>
+            <button
+              class="btn btn-success w-100"
+              type="button"
+              @click="onCreate"
+            >
+              Add Category
+            </button>
           </td>
         </tr>
       </tbody>
@@ -96,14 +102,12 @@
 import { Vue } from "vue-class-component";
 import { Subject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
-import { AppService } from "../services/app.service";
 
 export default class Categories extends Vue {
-  app = new AppService();
   newCategory = {
     id: "",
     title: "",
-    description: "",
+    description: ""
   };
 
   categories: any[] = [];
@@ -116,7 +120,7 @@ export default class Categories extends Vue {
   }
 
   async fetchCategories() {
-    console.log('Categories');
+    console.log("Categories");
   }
 
   async onCreate() {
