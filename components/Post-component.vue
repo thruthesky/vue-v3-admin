@@ -53,31 +53,14 @@ export default class PostComponent extends Vue {
   }
 
   async onSave() {
-    // console.log(this.editData);
-    // try {
-    //   this.editData.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
-    //   await this.postsCol.doc(this.post.id).set(this.editData, { merge: true });
-    //   Object.assign(this.post, this.editData);
-    //   this.inEdit = false;
-    //   alert("Post Updated!");
-    // } catch (e) {
-    //   alert(e);
-    // }
+    return;
   }
 
   async onDelete() {
     const conf = confirm("Delete post?");
 
     if (!conf) return;
-
-    // try {
-    //   await this.postsCol.doc(this.post.id).delete();
-    //   this.$emit("on-deleted", this.post.id);
-    //   alert("post deleted!");
-    // } catch (e) {
-    //   console.log(e);
-    //   alert(e);
-    // }
+    return;
   }
 }
 </script>

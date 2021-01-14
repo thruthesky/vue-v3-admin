@@ -94,97 +94,20 @@ export default class PostsCreateComponent extends Vue {
    * TODO: add files.
    */
   async onCreate() {
-    // const data: any = {};
-    // Object.assign(data, this.newPostData);
-    // if (this.category) this.newPostData.category = this.category;
-
-    // if (!this.newPostData.category) {
-    //   return alert("Please choose category");
-    // }
-    // this.newPostData.uid = firebase.auth().currentUser?.uid;
-    // this.newPostData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-    // this.newPostData.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
-
-    // // console.log(this.newPostData);
-    // try {
-    //   const post = await this.postsCol.add(this.newPostData);
-    //   this.newPostData.id = post.id;
-    //   this.$emit("on-created", Object.assign({}, this.newPostData));
-    // } catch (e) {
-    //   alert(e);
-    // }
-
-    // try {
-    //   const client = algoliasearch(
-    //     Settings.get("ALGOLIA_APP_ID"),
-    //     Settings.get("ALGOLIA_ADMIN_API_KEY")
-    //   );
-    //   const index = client.initIndex(Settings.get("ALGOLIA_INDEX_NAME"));
-    //   const data = {
-    //     objectID: "posts/" + this.newPostData.id,
-    //     title: this.newPostData.title,
-    //     content: this.newPostData.content,
-    //     stamp: new Date().getTime()
-    //   };
-    //   console.log("data: ", data);
-
-    //   /// This does not throw exception even if there is an error.
-    //   await index.saveObject(data);
-    // } catch (e) {
-    //   (this.$data as any).app.error(e);
-    // }
-
-    // this.newPostData.title = "";
-    // this.newPostData.content = "";
-    // this.newPostData.files = [];
-    // alert("New post created!");
+    this.newPostData.title = "";
+    this.newPostData.content = "";
+    this.newPostData.files = [];
+    return;
   }
 
   async onImageChanged(event: any) {
-    // const file: File = event.target.files[0];
-    // const filename = (this.$data as any).app.getRandomString();
-
-    // const ref = this.storage.ref(this.forumPhotosFolder + "/" + filename);
-    // const customMeta = { uid: firebase.auth().currentUser?.uid as string };
-    // const task = ref.put(file, {
-    //   customMetadata: customMeta
-    // });
-
-    // /// TODO: upload progress indicator
-    // task.on("next", (snapshot) => {
-    //   console.log("upload", snapshot.bytesTransferred, snapshot.totalBytes);
-    //   console.log(
-    //     "upload progress",
-    //     snapshot.bytesTransferred / snapshot.totalBytes
-    //   );
-    // });
-
-    // try {
-    //   await task;
-    //   const url = await ref.getDownloadURL();
-    //   this.newPostData.files.push(url);
-    //   (this.$data as any).app.alert("Upload success!");
-    // } catch (e) {
-    //   (this.$data as any).app.error(e);
-    // }
+    const file: File = event.target.files[0];
+    console.log(file);
+    return;
   }
 
   async onClickDeleteFile(url: string) {
-    // console.log(url);
-    // url = (this.$data as any).app.getStorageFileFromUrl(
-    //   url,
-    //   this.forumPhotosFolder
-    // );
-
-    // try {
-    //   await (this.$data as any).app.fileDelete(url);
-    //   const pos = this.newPostData.files.findIndex((e: string) => e == url);
-    //   this.newPostData.files.splice(pos, 1);
-
-    //   console.log("success file deletion.");
-    // } catch (e) {
-    //   console.log("error on deleting file: , ", e);
-    // }
+    return;
   }
 }
 </script>
