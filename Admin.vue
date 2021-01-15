@@ -1,12 +1,12 @@
 <template>
   <section class="admin-layout layout-content">
-    <div v-if="!app.isAdmin">
-      <div v-if="app.loggedIn">You have logged in as a user account.</div>
+    <div v-if="!api.isAdmin">
+      <div v-if="api.loggedIn">You have logged in as a user account.</div>
       Please login with admin account.
       <LoginForm />
     </div>
 
-    <section v-if="app.isAdmin">
+    <section v-if="api.isAdmin">
       <hr />
 
       <div id="nav">

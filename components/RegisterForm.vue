@@ -31,7 +31,7 @@ export default class RegisterForm extends Vue {
   form: ApiRegister = {} as ApiRegister;
 
   async onSubmit() {
-    console.log(this.form);
+    // console.log(this.form);
     try {
       const data = await Api.register(this.form);
       this.$emit("success", data);
