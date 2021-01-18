@@ -40,36 +40,50 @@
         </tr>
       </tbody>
     </table>
-    <!-- 
-    {{ translations }} -->
-
     <table class="table mb-5 w-100">
+      <thead>
+        <tr>
+          <th scope="col">Code</th>
+          <th v-for="ln of translations.languageCodes" :key="ln" scope="col">
+            {{ ln }}
+          </th>
+          <th>Actions</th>
+        </tr>
+      </thead>
       <tbody>
-        <tr
-          v-for="(translation, index) of translations"
-          :key="translation.code"
-        >
-          <td>ID: <br />{{ translation.ID }}</td>
+        <tr v-for="(value, code) of translations.translations" :key="code">
+          <!-- code -->
           <td>
-            <span> code </span>
             <input
               class="fs-6 py-2 w-100"
               type="text"
-              v-model="translations[index].code"
+              name="code"
+              v-model="value.code"
+              @keyup="
+                textChanges.next({
+                  code: code,
+                  new_code: $event.target.value,
+                })
+              "
             />
-            {{ translation }}
           </td>
-          <td
-            v-for="(value, key) of translations[index].translations"
-            :key="key + value"
-          >
-            <input class="fs-6 py-2 w-100" type="text" :value="value" />
+          <!-- translations -->
+          <td v-for="ln of translations.languageCodes" :key="ln">
+            <input
+              class="fs-6 py-2 w-100"
+              type="text"
+              v-model="translations.translations[code][ln]"
+              @keyup="
+                textChanges.next({
+                  code: code,
+                  language: ln,
+                  value: $event.target.value,
+                })
+              "
+            />
           </td>
           <td>
-            <button class="btn btn-success" @click="updateTranslation(index)">
-              Update
-            </button>
-            <button class="btn btn-warning" @click="deleteTranslation(index)">
+            <button class="btn btn-warning" @click="deleteTranslation(code)">
               Delete
             </button>
           </td>
@@ -85,58 +99,72 @@ import { Subject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
 import {
   Api,
-  ApiEditTranslation,
-  ApiTranslation,
+  ApiAddTranslation,
+  ApiTranslationList,
+  ApiUpdateTranslation,
 } from "../services/api.service";
 
 export default class Categories extends Vue {
   fetchingTranslations = false;
 
-  newTranslation: ApiEditTranslation = {} as ApiEditTranslation;
-
+  translations: ApiTranslationList = {} as ApiTranslationList;
+  newTranslation: ApiAddTranslation = {} as ApiAddTranslation;
   textChanges = new Subject();
-
-  translations: ApiTranslation[] = [];
 
   created() {
     this.fetchTranslations();
+
+    this.textChanges.pipe(debounceTime(400)).subscribe((data: any) => {
+      console.log(data);
+      this.updateTranslation(data as ApiUpdateTranslation);
+    });
   }
 
   async fetchTranslations() {
-    return;
+    try {
+      const re = await Api.listTranslations();
+      this.translations = re;
+    } catch (e) {
+      alert(e);
+    }
   }
 
   async addTranslation() {
     try {
       const re = await Api.addTranslation(this.newTranslation);
+      if (!this.translations.languageCodes.includes(re.language)) {
+        this.translations.languageCodes.push(re.language);
+      }
 
-      // this.translations.push(re);
-      console.log("Success adding translation :", re);
+      if (!this.translations.translations[re.code]) {
+        this.translations.translations[re.code] = {
+          code: re.code,
+        };
+      }
+      this.translations.translations[re.code][re.language] = re.value;
     } catch (e) {
-      console.error(e);
+      alert(e);
     }
   }
 
-  async updateTranslation(index: number) {
-    console.log(this.translations[index]);
+  async updateTranslation(data: ApiUpdateTranslation) {
     try {
-      const re = await Api.updateTranslation(this.translations[index]);
-      console.log("Success updating translation :", re);
+      const re = await Api.updateTranslation(data);
     } catch (e) {
-      console.error(e);
+      alert(e);
     }
   }
 
-  async deleteTranslation(index: number) {
+  async deleteTranslation(code: string) {
     const conf = confirm("Delete translation?");
 
     if (!conf) return;
 
     try {
-      const re = await Api.deleteTranslation(this.translations[index]);
-      this.translations.splice(index, 1);
+      const re = await Api.deleteTranslation({ code: code });
+      delete this.translations.translations[code];
     } catch (e) {
-      console.error(e);
+      alert(e);
     }
   }
 }
