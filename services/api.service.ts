@@ -33,11 +33,19 @@ export interface ApiTranslation {
   [key: string]: string;
 }
 
+export interface ApiTranslationResponse extends ApiTranslation {
+  language: string;
+  value: string;
+}
+
 export interface ApiAddTranslation {
+  code: string;
+  language: string;
   route?: "translation.add";
 }
 
 export interface ApiUpdateTranslation {
+  code: string;
   route?: "translation.update";
   new_code?: string;
   value?: string;
@@ -152,7 +160,7 @@ export class Api {
     return re;
   }
 
-  static async addTranslation(req: ApiAddTranslation): Promise<ApiTranslation> {
+  static async addTranslation(req: ApiAddTranslation): Promise<ApiTranslationResponse> {
     req.route = "translation.add";
     const re = await this.request(req);
     // console.log("addTranslation:RE :", re);

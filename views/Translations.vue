@@ -40,7 +40,10 @@
         </tr>
       </tbody>
     </table>
-    <table class="table mb-5 w-100">
+
+    <!-- Translation table -->
+    <!-- {{ translations }} -->
+    <table class="table table-striped mb-5 w-100">
       <thead>
         <tr>
           <th scope="col">Code</th>
@@ -51,39 +54,45 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(value, code) of translations.translations" :key="code">
+        <tr
+          v-for="(translation, index) of translations.translations"
+          :key="index"
+        >
           <!-- code -->
           <td>
             <input
               class="fs-6 py-2 w-100"
               type="text"
               name="code"
-              v-model="value.code"
+              :value="translations.translations[index].code"
               @keyup="
                 textChanges.next({
-                  code: code,
+                  code: translations.translations[index].code,
                   new_code: $event.target.value,
                 })
               "
             />
           </td>
           <!-- translations -->
-          <td v-for="ln of translations.languageCodes" :key="ln">
+          <td class="p-2" v-for="ln of translations.languageCodes" :key="ln">
             <input
               class="fs-6 py-2 w-100"
               type="text"
-              v-model="translations.translations[code][ln]"
+              v-model="translations.translations[index][ln]"
               @keyup="
                 textChanges.next({
-                  code: code,
+                  code: translations.translations[index].code,
                   language: ln,
                   value: $event.target.value,
                 })
               "
             />
           </td>
-          <td>
-            <button class="btn btn-warning" @click="deleteTranslation(code)">
+          <td class="text-center">
+            <button
+              class="w-100 btn btn-danger"
+              @click="deleteTranslation(translations.translations[index].code)"
+            >
               Delete
             </button>
           </td>
@@ -107,7 +116,10 @@ import {
 export default class Categories extends Vue {
   fetchingTranslations = false;
 
-  translations: ApiTranslationList = {} as ApiTranslationList;
+  translations: ApiTranslationList = {
+    translations: {},
+    languageCodes: [],
+  } as ApiTranslationList;
   newTranslation: ApiAddTranslation = {} as ApiAddTranslation;
   textChanges = new Subject();
 
@@ -123,7 +135,7 @@ export default class Categories extends Vue {
   async fetchTranslations() {
     try {
       const re = await Api.listTranslations();
-      this.translations = re;
+      Object.assign(this.translations, re);
     } catch (e) {
       alert(e);
     }
@@ -136,12 +148,15 @@ export default class Categories extends Vue {
         this.translations.languageCodes.push(re.language);
       }
 
-      if (!this.translations.translations[re.code]) {
+      if (this.translations.translations[re.code]) {
+        this.translations.translations[re.code][re.language] = re.value;
+      } else {
         this.translations.translations[re.code] = {
           code: re.code,
+          [re.language]: re.value,
         };
       }
-      this.translations.translations[re.code][re.language] = re.value;
+      this.newTranslation = {} as any;
     } catch (e) {
       alert(e);
     }
@@ -150,6 +165,13 @@ export default class Categories extends Vue {
   async updateTranslation(data: ApiUpdateTranslation) {
     try {
       const re = await Api.updateTranslation(data);
+      for (const [key, value] of Object.entries(
+        this.translations.translations
+      )) {
+        if (value.code == data.code) {
+          this.translations.translations[key].code = re.code;
+        }
+      }
     } catch (e) {
       alert(e);
     }
@@ -157,12 +179,14 @@ export default class Categories extends Vue {
 
   async deleteTranslation(code: string) {
     const conf = confirm("Delete translation?");
-
     if (!conf) return;
-
     try {
       const re = await Api.deleteTranslation({ code: code });
-      delete this.translations.translations[code];
+      for (const [key, value] of Object.entries(
+        this.translations.translations
+      )) {
+        if (value.code == re.code) delete this.translations.translations[key];
+      }
     } catch (e) {
       alert(e);
     }
