@@ -18,7 +18,7 @@
           </td>
           <td>
             <button class="btn btn-success" @click="addTranslationLanguage">
-              Add Translation
+              Add Language
             </button>
           </td>
         </tr>

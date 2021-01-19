@@ -115,6 +115,7 @@ export class Api {
 
   static async listTranslations(): Promise<ApiTranslationList> {
     const re = await this.request({ route: "translation.list" });
+    if (re.length < 1) return {};
     return re;
   }
 
