@@ -4,112 +4,97 @@
     <br />
     <br />
 
-    <h4>Add New languange (code):</h4>
-    <table class="table mb-5 w-50">
+    <h4>Add Translation</h4>
+    <table class="table mb-5 w-100">
       <tbody>
         <tr>
           <td>
             <input
               class="fs-6 py-2 w-100"
               type="text"
-              name="newLanguange"
-              v-model="newLanguangeCode"
+              placeholder="Language"
+              v-model="newTranslation.language"
             />
           </td>
           <td>
-            <button class="btn btn-success" @click="addNewLanguageCode">
-              Add Language Code
+            <input
+              class="fs-6 py-2 w-100"
+              type="text"
+              placeholder="Code"
+              v-model="newTranslation.code"
+            />
+          </td>
+          <td>
+            <input
+              class="fs-6 py-2 w-100"
+              type="text"
+              placeholder="Text"
+              v-model="newTranslation.value"
+            />
+          </td>
+          <td>
+            <button class="btn btn-success" @click="addTranslation">
+              Add Translation
             </button>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <h4>Add new translation</h4>
-    <table class="table mb-5">
+    <!-- Translation table -->
+    <!-- {{ translations }} -->
+    <table class="table table-striped mb-5 w-100">
       <thead>
         <tr>
-          <th>Code</th>
-          <th v-for="lc of languageCodes" :key="lc">
-            {{ lc.toUpperCase() }}
+          <th scope="col">Code</th>
+          <th v-for="ln of translations.languageCodes" :key="ln" scope="col">
+            {{ ln }}
           </th>
-          <th>ACTIONS</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td class="py-2">
-            <input
-              class="fs-5 w-100"
-              type="text"
-              name="newTranslationCode"
-              v-model="newTranslationCode"
-            />
-          </td>
-          <td class="py-2" v-for="lc of languageCodes" :key="lc">
-            <input
-              class="fs-5 w-100"
-              type="text"
-              v-model="newTranslationTexts[lc]"
-            />
-          </td>
-          <td>
-            <button
-              class="w-100 btn btn-success"
-              @click="onAddNewTranslationCode"
-            >
-              Add
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h4>Translations table</h4>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>CODE</th>
-          <th v-for="lc of languageCodes" :key="lc">
-            {{ lc.toUpperCase() }}
-          </th>
-          <th>ACTIONS</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(texts, code) in translations" :key="code">
+        <tr
+          v-for="(translation, index) of translations.translations"
+          :key="index"
+        >
+          <!-- code -->
           <td>
             <input
-              class="fs-5 w-100"
+              class="fs-6 py-2 w-100"
               type="text"
-              :value="code"
+              name="code"
+              :value="translations.translations[index].code"
               @keyup="
-                textChanges.next({ code: code, newCode: $event.target.value })
+                textChanges.next({
+                  code: translations.translations[index].code,
+                  new_code: $event.target.value,
+                })
               "
             />
           </td>
-          <td class="p-2" v-for="lc in languageCodes" :key="lc">
+          <!-- translations -->
+          <td class="p-2" v-for="ln of translations.languageCodes" :key="ln">
             <input
-              class="fs-5 w-100"
+              class="fs-6 py-2 w-100"
               type="text"
-              v-model="texts[lc]"
-              @keyup="textChanges.next({ code: code, lc: lc })"
+              v-model="translations.translations[index][ln]"
+              @keyup="
+                textChanges.next({
+                  code: translations.translations[index].code,
+                  language: ln,
+                  value: $event.target.value,
+                })
+              "
             />
           </td>
           <td class="text-center">
             <button
               class="w-100 btn btn-danger"
-              type="button"
-              @click="onDelete(code)"
-              v-if="!translations[code]['loading']"
+              @click="deleteTranslation(translations.translations[index].code)"
             >
               Delete
             </button>
-
-            <span v-if="translations[code]['loading'] == 'saving'"
-              >Saving.</span
-            >
-            <span v-if="translations[code]['loading'] == 'saved'">Saved!</span>
           </td>
         </tr>
       </tbody>
@@ -121,69 +106,91 @@
 import { Vue } from "vue-class-component";
 import { Subject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
+import {
+  Api,
+  ApiAddTranslation,
+  ApiTranslationList,
+  ApiUpdateTranslation,
+} from "../services/api.service";
 
 export default class Categories extends Vue {
   fetchingTranslations = false;
 
-  newLanguangeCode = "";
-  newTranslationCode = "";
-  newTranslationTexts = {};
-
-  languageCodes: string[] = [];
-  translations: {
-    [key: string]: {
-      [key: string]: {};
-    };
-  } = {};
-
+  translations: ApiTranslationList = {
+    translations: {},
+    languageCodes: [],
+  } as ApiTranslationList;
+  newTranslation: ApiAddTranslation = {} as ApiAddTranslation;
   textChanges = new Subject();
 
   created() {
     this.fetchTranslations();
 
     this.textChanges.pipe(debounceTime(400)).subscribe((data: any) => {
-      if (data.newCode) {
-        this.onUpdateTranslationCode(data.code, data.newCode);
-      } else {
-        this.saveText(data.code, data.lc);
-      }
+      console.log(data);
+      this.updateTranslation(data as ApiUpdateTranslation);
     });
   }
 
   async fetchTranslations() {
-    this.fetchingTranslations = true;
-    console.log("Translations");
+    try {
+      const re = await Api.listTranslations();
+      Object.assign(this.translations, re);
+    } catch (e) {
+      alert(e);
+    }
   }
 
-  async addNewLanguageCode() {
-    if (!this.newLanguangeCode) return;
-    return;
+  async addTranslation() {
+    try {
+      const re = await Api.addTranslation(this.newTranslation);
+      if (!this.translations.languageCodes.includes(re.language)) {
+        this.translations.languageCodes.push(re.language);
+      }
+
+      if (this.translations.translations[re.code]) {
+        this.translations.translations[re.code][re.language] = re.value;
+      } else {
+        this.translations.translations[re.code] = {
+          code: re.code,
+          [re.language]: re.value,
+        };
+      }
+      this.newTranslation = {} as any;
+    } catch (e) {
+      alert(e);
+    }
   }
 
-  onDelete(translationCode: string) {
-    const conf = confirm("Delete translation for " + translationCode + "?");
+  async updateTranslation(data: ApiUpdateTranslation) {
+
+    try {
+      const re = await Api.updateTranslation(data);
+      for (const [key, value] of Object.entries(
+        this.translations.translations
+      )) {
+        if (value.code == data.code) {
+          this.translations.translations[key].code = re.code;
+        }
+      }
+    } catch (e) {
+      alert(e);
+    }
+  }
+
+  async deleteTranslation(code: string) {
+    const conf = confirm("Delete translation?");
     if (!conf) return;
-    return;
-  }
-
-  onAddNewTranslationCode() {
-    if (!this.newTranslationCode) {
-      return alert("Please enter translation code");
+    try {
+      const re = await Api.deleteTranslation({ code: code });
+      for (const [key, value] of Object.entries(
+        this.translations.translations
+      )) {
+        if (value.code == re.code) delete this.translations.translations[key];
+      }
+    } catch (e) {
+      alert(e);
     }
-
-    if (this.translations[this.newTranslationCode]) {
-      return alert("translation code already exists");
-    }
-
-    return;
-  }
-
-  onUpdateTranslationCode(code: string, newCode: string) {
-    return;
-  }
-
-  async saveText(code: string, lc: string) {
-    return;
   }
 }
 </script>

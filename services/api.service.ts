@@ -28,9 +28,44 @@ export interface ApiUpdateProfile extends ApiUser {
   route?: "user.profileUpdate";
 }
 
+export interface ApiTranslation {
+  code: string;
+  [key: string]: string;
+}
+
+export interface ApiTranslationResponse extends ApiTranslation {
+  language: string;
+  value: string;
+}
+
+export interface ApiAddTranslation {
+  code: string;
+  language: string;
+  route?: "translation.add";
+}
+
+export interface ApiUpdateTranslation {
+  code: string;
+  route?: "translation.update";
+  new_code?: string;
+  value?: string;
+}
+
+export interface ApiDeleteTranslation {
+  route?: "translation.delete";
+  code: string;
+}
+
+export interface ApiTranslationList {
+  translations: {
+    [key: string]: ApiTranslation;
+  };
+  languageCodes: string[];
+}
+
 export class Api {
   static store = reactive({
-    user: null as any
+    user: null as any,
   });
   static get user() {
     return this.store.user;
@@ -118,5 +153,35 @@ export class Api {
   static logout() {
     this.store.user = null as any;
     localStorage.removeItem("user");
+  }
+
+  static async listTranslations(): Promise<ApiTranslationList> {
+    const re = await this.request({ route: "translation.list" });
+    return re;
+  }
+
+  static async addTranslation(req: ApiAddTranslation): Promise<ApiTranslationResponse> {
+    req.route = "translation.add";
+    const re = await this.request(req);
+    // console.log("addTranslation:RE :", re);
+    return re;
+  }
+
+  static async updateTranslation(
+    req: ApiUpdateTranslation
+  ): Promise<ApiTranslation> {
+    req.route = "translation.update";
+    const re = await this.request(req);
+    // console.log("updateTranslation:RE :", re);
+    return re;
+  }
+
+  static async deleteTranslation(
+    req: ApiDeleteTranslation
+  ): Promise<ApiTranslation> {
+    req.route = "translation.delete";
+    const re = await this.request(req);
+    // console.log("deleteTranslation:RE :", re);
+    return re;
   }
 }
