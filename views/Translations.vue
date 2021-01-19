@@ -163,6 +163,8 @@ export default class Categories extends Vue {
   }
 
   async updateTranslation(data: ApiUpdateTranslation) {
+    this.translations.translations[data.code]["loading"] = "saving";
+
     try {
       const re = await Api.updateTranslation(data);
       for (const [key, value] of Object.entries(
@@ -170,7 +172,11 @@ export default class Categories extends Vue {
       )) {
         if (value.code == data.code) {
           this.translations.translations[key].code = re.code;
+          this.translations.translations[key]["loading"] = "saved";
         }
+        setTimeout(() => {
+          delete this.translations.translations[re.code]["loading"];
+        }, 500);
       }
     } catch (e) {
       alert(e);
