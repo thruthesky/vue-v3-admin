@@ -216,7 +216,7 @@ export default class Categories extends Vue {
   }
 
   async changeTranslationCode(data: ApiChangeTranslationCode) {
-    console.log("change code", data);
+    // console.log("change code", data);
     try {
       const re = Api.changeTranslationCode(data);
       this.languageCodes.forEach((ln) => {
