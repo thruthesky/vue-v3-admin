@@ -65,7 +65,7 @@ export interface ApiTranslationList {
 
 export class Api {
   static store = reactive({
-    user: null as any,
+    user: null as any
   });
   static get user() {
     return this.store.user;
@@ -84,7 +84,7 @@ export class Api {
   }
 
   static get isAdmin() {
-    return true;
+    return this.loggedIn && this.user.admin;
   }
 
   static get loggedIn() {
@@ -155,12 +155,18 @@ export class Api {
     localStorage.removeItem("user");
   }
 
+  static async addTranslationLanguage() {
+    console.log("..");
+  }
+
   static async listTranslations(): Promise<ApiTranslationList> {
     const re = await this.request({ route: "translation.list" });
     return re;
   }
 
-  static async addTranslation(req: ApiAddTranslation): Promise<ApiTranslationResponse> {
+  static async addTranslation(
+    req: ApiAddTranslation
+  ): Promise<ApiTranslationResponse> {
     req.route = "translation.add";
     const re = await this.request(req);
     // console.log("addTranslation:RE :", re);
