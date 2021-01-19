@@ -25,7 +25,6 @@ export interface ApiUpdateProfile extends ApiUser {
   route?: "user.profileUpdate";
 }
 
-
 export interface ApiTranslationList {
   [key: string]: {
     [key: string]: string;
@@ -49,11 +48,11 @@ export interface ApiAddTranslationLanguage extends ApiTranslationRequest {
 
 /// Add translations
 export interface ApiAddTranslations {
-  route?: 'translation.addTranslations',
-  code: string,
+  route?: "translation.addTranslations";
+  code: string;
   translations: {
     [key: string]: string;
-  }
+  };
 }
 
 /// for updating translation code

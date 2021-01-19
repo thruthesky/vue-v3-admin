@@ -25,7 +25,7 @@
       </tbody>
     </table>
 
-    <div v-if="languageCodes.length">
+    <div v-if="languages.length">
       <h4>Add Translation</h4>
       <table class="table mb-5 w-100">
         <tbody>
@@ -38,7 +38,7 @@
                 v-model="newTranslation.code"
               />
             </td>
-            <td v-for="ln of languageCodes" :key="ln">
+            <td v-for="ln of languages" :key="ln">
               <input
                 class="fs-6 py-2 w-100"
                 type="text"
@@ -61,14 +61,14 @@
       <thead>
         <tr>
           <th scope="col">Code</th>
-          <th v-for="ln of languageCodes" :key="ln" scope="col">
+          <th v-for="ln of languages" :key="ln" scope="col">
             {{ ln }}
           </th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="code of translationCodes" :key="code">
+        <tr v-for="(values, code) of translations" :key="code">
           <td>
             <input
               class="fs-6 py-2 w-100"
@@ -77,21 +77,21 @@
               @keyup="
                 textChanges.next({
                   oldCode: code,
-                  newCode: $event.target.value,
+                  newCode: $event.target.value
                 })
               "
             />
           </td>
-          <td v-for="ln of languageCodes" :key="ln">
+          <td v-for="ln of languages" :key="ln + '-' + code">
             <input
               class="fs-6 py-2 w-100"
               type="text"
-              v-model="translations[ln][code]"
+              v-model="translations[code][ln]"
               @keyup="
                 textChanges.next({
                   code: code,
                   language: ln,
-                  value: $event.target.value,
+                  value: $event.target.value
                 })
               "
             />
@@ -119,49 +119,56 @@ import {
   ApiAddTranslations,
   ApiChangeTranslationCode,
   ApiEditTranslation,
-  ApiTranslationList,
+  ApiTranslationList
 } from "../services/api.interfaces";
 
 export default class Categories extends Vue {
   fetchingTranslations = false;
 
+  languages: string[] = [];
   translations: ApiTranslationList = {};
   newLanguageCode = "";
   newTranslation: ApiAddTranslations = {
     code: "",
-    translations: {},
+    translations: {}
   };
   textChanges = new Subject();
 
-  get languageCodes() {
-    return Object.keys(this.translations);
-  }
+  // get languageCodes() {
+  //   return Object.keys(this.translations);
+  // }
 
-  get translationCodes() {
-    const codes: any = {};
-    this.languageCodes.forEach((ln) => {
-      Object.assign(codes, this.translations[ln]);
-    });
+  // get translationCodes() {
+  //   const codes: any = {};
+  //   this.languageCodes.forEach((ln) => {
+  //     Object.assign(codes, this.translations[ln]);
+  //   });
 
-    return Object.keys(codes);
-  }
+  //   return Object.keys(codes);
+  // }
 
   created() {
     this.fetchTranslations();
 
-    this.textChanges.pipe(debounceTime(400)).subscribe((data: any) => {
-      if (data.newCode) {
-        this.changeTranslationCode(data);
-      } else {
-        this.updateTranslation(data);
-      }
-    });
+    this.textChanges
+      .pipe(
+        debounceTime(400)
+        // , distinctUntilChanged()
+      )
+      .subscribe((data: any) => {
+        if (data.newCode) {
+          this.changeTranslationCode(data);
+        } else {
+          this.updateTranslation(data);
+        }
+      });
   }
 
   async fetchTranslations() {
     try {
-      const re = await Api.listTranslations();
-      this.translations = re;
+      const re: any = await Api.listTranslations();
+      this.translations = re.translations;
+      this.languages = re.languages;
     } catch (e) {
       alert(e);
     }
@@ -174,7 +181,7 @@ export default class Categories extends Vue {
 
     try {
       const re = await Api.addTranslationLanguage({
-        language: this.newLanguageCode,
+        language: this.newLanguageCode
       });
       this.translations[this.newLanguageCode] = {};
       this.newLanguageCode = "";
@@ -185,24 +192,23 @@ export default class Categories extends Vue {
   }
 
   async addTranslations() {
-    this.languageCodes.forEach(async (ln) => {
-      const data: ApiEditTranslation = {
-        code: this.newTranslation.code,
-        language: ln,
-        value: this.newTranslation.translations[ln],
-      };
-
-      try {
-        const re = await Api.editTranslation(data);
-        this.translations[ln][data.code] = data.value;
-      } catch (e) {
-        alert(e);
-      }
-    });
-    this.newTranslation = {
-      code: "",
-      translations: {},
-    };
+    // this.languageCodes.forEach(async (ln) => {
+    //   const data: ApiEditTranslation = {
+    //     code: this.newTranslation.code,
+    //     language: ln,
+    //     value: this.newTranslation.translations[ln]
+    //   };
+    // try {
+    //   const re = await Api.editTranslation(data);
+    //   this.translations[ln][data.code] = data.value;
+    // } catch (e) {
+    //   alert(e);
+    // }
+    // });
+    // this.newTranslation = {
+    //   code: "",
+    //   translations: {}
+    // };
   }
 
   async updateTranslation(data: ApiEditTranslation) {
@@ -219,15 +225,15 @@ export default class Categories extends Vue {
     // console.log("change code", data);
     try {
       const re = Api.changeTranslationCode(data);
-      this.languageCodes.forEach((ln) => {
-        if (this.translations[ln][data.oldCode]) {
-          this.translations[ln][data.newCode] = this.translations[ln][
-            data.oldCode
-          ];
-          delete this.translations[ln][data.oldCode];
-        }
-      });
-      alert("Translation code updated!");
+      // this.languageCodes.forEach((ln) => {
+      //   if (this.translations[ln][data.oldCode]) {
+      //     this.translations[ln][data.newCode] = this.translations[ln][
+      //       data.oldCode
+      //     ];
+      //     delete this.translations[ln][data.oldCode];
+      //   }
+      // });
+      // alert("Translation code updated!");
     } catch (e) {
       alert(e);
     }
@@ -236,14 +242,14 @@ export default class Categories extends Vue {
   async deleteTranslation(code: string) {
     const conf = confirm("Delete translation?");
     if (!conf) return;
-    try {
-      const re = await Api.deleteTranslation({ code: code });
-      this.languageCodes.forEach((ln) => {
-        delete this.translations[ln][code];
-      });
-    } catch (e) {
-      alert(e);
-    }
+    // try {
+    //   const re = await Api.deleteTranslation({ code: code });
+    //   this.languageCodes.forEach((ln) => {
+    //     delete this.translations[ln][code];
+    //   });
+    // } catch (e) {
+    //   alert(e);
+    // }
     alert("Translations deleted!");
   }
 }
