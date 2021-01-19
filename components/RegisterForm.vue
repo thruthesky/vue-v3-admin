@@ -22,7 +22,8 @@
 
 <script lang="ts">
 import { Vue, Options } from "vue-class-component";
-import { Api, ApiRegister } from "../services/api.service";
+import { ApiRegister } from "../services/api.interfaces";
+import { Api } from "../services/api.service";
 
 @Options({
   emits: ["success", "error"]

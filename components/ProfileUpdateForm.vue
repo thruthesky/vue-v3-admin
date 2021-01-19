@@ -17,7 +17,8 @@
 
 <script lang="ts">
 import { Vue, Options } from "vue-class-component";
-import { Api, ApiUpdateProfile } from "../services/api.service";
+import { ApiUpdateProfile } from "../services/api.interfaces";
+import { Api } from "../services/api.service";
 @Options({
   emits: ["success", "error"]
 })

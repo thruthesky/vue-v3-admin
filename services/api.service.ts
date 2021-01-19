@@ -1,71 +1,21 @@
 import axios from "axios";
 import { reactive, ref } from "vue";
-
-export interface ApiUser {
-  ID?: string;
-  session_id?: string;
-  user_email?: string;
-  user_pass?: string;
-  first_name?: string;
-  last_name?: string;
-  nickname?: string;
-  profile_photo_url?: string;
-}
-
-export interface ApiRegister {
-  route?: "user.register";
-}
-
-export interface ApiLogin {
-  route?: "user.login";
-}
-
-export interface ApiProfile extends ApiUser {
-  route?: "user.profile";
-}
-
-export interface ApiUpdateProfile extends ApiUser {
-  route?: "user.profileUpdate";
-}
-
-export interface ApiTranslation {
-  code: string;
-  [key: string]: string;
-}
-
-export interface ApiTranslationResponse extends ApiTranslation {
-  language: string;
-  value: string;
-}
-
-export interface ApiAddTranslation {
-  code: string;
-  language: string;
-  route?: "translation.add";
-}
-
-export interface ApiUpdateTranslation {
-  code: string;
-  route?: "translation.update";
-  new_code?: string;
-  value?: string;
-}
-
-export interface ApiDeleteTranslation {
-  route?: "translation.delete";
-  code: string;
-}
-
-export interface ApiTranslationList {
-  translations: {
-    [key: string]: ApiTranslation;
-  };
-  languageCodes: string[];
-}
+import {
+  ApiLogin,
+  ApiRegister,
+  ApiUpdateProfile,
+  ApiUser,
+  ApiAddTranslationLanguage,
+  ApiTranslationList,
+  ApiAddTranslations,
+  ApiEditTranslation,
+  ApiDeleteTranslation,
+  ApiChangeTranslationCode,
+} from "./api.interfaces";
 
 export class Api {
   static store = reactive({
-    user: null as any
+    user: null as any,
   });
   static get user() {
     return this.store.user;
@@ -155,8 +105,12 @@ export class Api {
     localStorage.removeItem("user");
   }
 
-  static async addTranslationLanguage() {
-    console.log("..");
+  static async addTranslationLanguage(
+    req: ApiAddTranslationLanguage
+  ): Promise<ApiAddTranslationLanguage> {
+    req.route = "translation.addLanguage";
+    const re = this.request(req);
+    return re;
   }
 
   static async listTranslations(): Promise<ApiTranslationList> {
@@ -164,27 +118,26 @@ export class Api {
     return re;
   }
 
-  static async addTranslation(
-    req: ApiAddTranslation
-  ): Promise<ApiTranslationResponse> {
-    req.route = "translation.add";
+  static async changeTranslationCode(
+    req: ApiChangeTranslationCode
+  ): Promise<ApiChangeTranslationCode> {
+    req.route = "translation.changeCode";
+    const re = await this.request(req);
+    return re;
+  }
+
+  static async editTranslation(
+    req: ApiEditTranslation
+  ): Promise<ApiAddTranslations> {
+    req.route = "translation.edit";
     const re = await this.request(req);
     // console.log("addTranslation:RE :", re);
     return re;
   }
 
-  static async updateTranslation(
-    req: ApiUpdateTranslation
-  ): Promise<ApiTranslation> {
-    req.route = "translation.update";
-    const re = await this.request(req);
-    // console.log("updateTranslation:RE :", re);
-    return re;
-  }
-
   static async deleteTranslation(
     req: ApiDeleteTranslation
-  ): Promise<ApiTranslation> {
+  ): Promise<ApiDeleteTranslation> {
     req.route = "translation.delete";
     const re = await this.request(req);
     // console.log("deleteTranslation:RE :", re);

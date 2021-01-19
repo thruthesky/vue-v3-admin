@@ -18,7 +18,8 @@
 
 <script lang="ts">
 import { Vue, Options } from "vue-class-component";
-import { Api, ApiLogin } from "../services/api.service";
+import { ApiLogin } from "../services/api.interfaces";
+import { Api } from "../services/api.service";
 @Options({
   emits: ["success", "error"]
 })

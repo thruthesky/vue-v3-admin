@@ -4,36 +4,20 @@
     <br />
     <br />
 
-    <h4>Add Translation</h4>
-    <table class="table mb-5 w-100">
+    <h4>Add Language</h4>
+    <table class="table table-striped mb-5 w-50">
       <tbody>
         <tr>
           <td>
             <input
               class="fs-6 py-2 w-100"
               type="text"
-              placeholder="Language"
-              v-model="newTranslation.language"
+              placeholder="Language code"
+              v-model="newLanguageCode"
             />
           </td>
           <td>
-            <input
-              class="fs-6 py-2 w-100"
-              type="text"
-              placeholder="Code"
-              v-model="newTranslation.code"
-            />
-          </td>
-          <td>
-            <input
-              class="fs-6 py-2 w-100"
-              type="text"
-              placeholder="Text"
-              v-model="newTranslation.value"
-            />
-          </td>
-          <td>
-            <button class="btn btn-success" @click="addTranslation">
+            <button class="btn btn-success" @click="addTranslationLanguage">
               Add Translation
             </button>
           </td>
@@ -41,57 +25,81 @@
       </tbody>
     </table>
 
-    <!-- Translation table -->
-    <!-- {{ translations }} -->
+    <div v-if="languageCodes.length">
+      <h4>Add Translation</h4>
+      <table class="table mb-5 w-100">
+        <tbody>
+          <tr>
+            <td>
+              <input
+                class="fs-6 py-2 w-100"
+                type="text"
+                placeholder="Translation Code"
+                v-model="newTranslation.code"
+              />
+            </td>
+            <td v-for="ln of languageCodes" :key="ln">
+              <input
+                class="fs-6 py-2 w-100"
+                type="text"
+                :placeholder="ln"
+                v-model="newTranslation.translations[ln]"
+              />
+            </td>
+            <td>
+              <button class="btn btn-success" @click="addTranslations">
+                Add Translation
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Translation Table</h4>
     <table class="table table-striped mb-5 w-100">
       <thead>
         <tr>
           <th scope="col">Code</th>
-          <th v-for="ln of translations.languageCodes" :key="ln" scope="col">
+          <th v-for="ln of languageCodes" :key="ln" scope="col">
             {{ ln }}
           </th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr
-          v-for="(translation, index) of translations.translations"
-          :key="index"
-        >
-          <!-- code -->
+        <tr v-for="code of translationCodes" :key="code">
           <td>
             <input
               class="fs-6 py-2 w-100"
               type="text"
-              name="code"
-              :value="translations.translations[index].code"
+              :value="code"
               @keyup="
                 textChanges.next({
-                  code: translations.translations[index].code,
-                  new_code: $event.target.value,
+                  oldCode: code,
+                  newCode: $event.target.value,
                 })
               "
             />
           </td>
-          <!-- translations -->
-          <td class="p-2" v-for="ln of translations.languageCodes" :key="ln">
+          <td v-for="ln of languageCodes" :key="ln">
             <input
               class="fs-6 py-2 w-100"
               type="text"
-              v-model="translations.translations[index][ln]"
+              v-model="translations[ln][code]"
               @keyup="
                 textChanges.next({
-                  code: translations.translations[index].code,
+                  code: code,
                   language: ln,
                   value: $event.target.value,
                 })
               "
             />
           </td>
-          <td class="text-center">
+          <td>
             <button
               class="w-100 btn btn-danger"
-              @click="deleteTranslation(translations.translations[index].code)"
+              @click="deleteTranslation(code)"
             >
               Delete
             </button>
@@ -106,73 +114,120 @@
 import { Vue } from "vue-class-component";
 import { Subject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
+import { Api } from "../services/api.service";
 import {
-  Api,
-  ApiAddTranslation,
+  ApiAddTranslations,
+  ApiChangeTranslationCode,
+  ApiEditTranslation,
   ApiTranslationList,
-  ApiUpdateTranslation,
-} from "../services/api.service";
+} from "../services/api.interfaces";
 
 export default class Categories extends Vue {
   fetchingTranslations = false;
 
-  translations: ApiTranslationList = {
+  translations: ApiTranslationList = {};
+  newLanguageCode = "";
+  newTranslation: ApiAddTranslations = {
+    code: "",
     translations: {},
-    languageCodes: [],
-  } as ApiTranslationList;
-  newTranslation: ApiAddTranslation = {} as ApiAddTranslation;
+  };
   textChanges = new Subject();
+
+  get languageCodes() {
+    return Object.keys(this.translations);
+  }
+
+  get translationCodes() {
+    const codes: any = {};
+    this.languageCodes.forEach((ln) => {
+      Object.assign(codes, this.translations[ln]);
+    });
+
+    return Object.keys(codes);
+  }
 
   created() {
     this.fetchTranslations();
 
     this.textChanges.pipe(debounceTime(400)).subscribe((data: any) => {
-      console.log(data);
-      this.updateTranslation(data as ApiUpdateTranslation);
+      if (data.newCode) {
+        this.changeTranslationCode(data);
+      } else {
+        this.updateTranslation(data);
+      }
     });
   }
 
   async fetchTranslations() {
     try {
       const re = await Api.listTranslations();
-      Object.assign(this.translations, re);
+      this.translations = re;
     } catch (e) {
       alert(e);
     }
   }
 
-  async addTranslation() {
-    try {
-      const re = await Api.addTranslation(this.newTranslation);
-      if (!this.translations.languageCodes.includes(re.language)) {
-        this.translations.languageCodes.push(re.language);
-      }
+  async addTranslationLanguage() {
+    if (!this.newLanguageCode.trim()) {
+      alert("PLEASE INPUT LANGUAGE");
+    }
 
-      if (this.translations.translations[re.code]) {
-        this.translations.translations[re.code][re.language] = re.value;
-      } else {
-        this.translations.translations[re.code] = {
-          code: re.code,
-          [re.language]: re.value,
-        };
-      }
-      this.newTranslation = {} as any;
+    try {
+      const re = await Api.addTranslationLanguage({
+        language: this.newLanguageCode,
+      });
+      this.translations[this.newLanguageCode] = {};
+      this.newLanguageCode = "";
+      alert("Language Added!");
     } catch (e) {
       alert(e);
     }
   }
 
-  async updateTranslation(data: ApiUpdateTranslation) {
+  async addTranslations() {
+    this.languageCodes.forEach(async (ln) => {
+      const data: ApiEditTranslation = {
+        code: this.newTranslation.code,
+        language: ln,
+        value: this.newTranslation.translations[ln],
+      };
 
+      try {
+        const re = await Api.editTranslation(data);
+        this.translations[ln][data.code] = data.value;
+      } catch (e) {
+        alert(e);
+      }
+    });
+    this.newTranslation = {
+      code: "",
+      translations: {},
+    };
+  }
+
+  async updateTranslation(data: ApiEditTranslation) {
     try {
-      const re = await Api.updateTranslation(data);
-      for (const [key, value] of Object.entries(
-        this.translations.translations
-      )) {
-        if (value.code == data.code) {
-          this.translations.translations[key].code = re.code;
+      const re = await Api.editTranslation(data);
+
+      alert("Translations updated!");
+    } catch (e) {
+      alert(e);
+    }
+  }
+
+  async changeTranslationCode(data: ApiChangeTranslationCode) {
+    console.log("change code", data);
+    try {
+      const re = Api.changeTranslationCode(data);
+      this.languageCodes.forEach((ln) => {
+        if (this.translations[ln][data.oldCode]) {
+          this.translations[ln][data.newCode] = this.translations[ln][
+            data.oldCode
+          ];
+          delete this.translations[ln][data.oldCode];
         }
-      }
+      });
+      alert("Translation code updated!");
     } catch (e) {
       alert(e);
     }
@@ -183,14 +238,13 @@ export default class Categories extends Vue {
     if (!conf) return;
     try {
       const re = await Api.deleteTranslation({ code: code });
-      for (const [key, value] of Object.entries(
-        this.translations.translations
-      )) {
-        if (value.code == re.code) delete this.translations.translations[key];
-      }
+      this.languageCodes.forEach((ln) => {
+        delete this.translations[ln][code];
+      });
     } catch (e) {
       alert(e);
     }
+    alert("Translations deleted!");
   }
 }
 </script>
