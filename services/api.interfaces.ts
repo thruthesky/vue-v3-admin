@@ -60,6 +60,7 @@ export interface ApiChangeTranslationCode {
   route?: "translation.changeCode";
   oldCode: string;
   newCode: string;
+  loading: string; // client end use only
 }
 
 /// for adding and updating

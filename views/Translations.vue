@@ -17,7 +17,10 @@
             />
           </td>
           <td>
-            <button class="btn btn-success w-100" @click="addTranslationLanguage">
+            <button
+              class="btn btn-success w-100"
+              @click="addTranslationLanguage"
+            >
               Add Language
             </button>
           </td>
@@ -73,10 +76,11 @@
             <input
               class="fs-6 py-2 w-100"
               type="text"
-              :value="code"
+              :value="translations[code].code"
               @keyup="
                 textChanges.next({
-                  oldCode: code,
+                  loading: code,
+                  oldCode: translations[code].code,
                   newCode: $event.target.value,
                 })
               "
@@ -229,8 +233,19 @@ export default class Categories extends Vue {
 
   async changeTranslationCode(data: ApiChangeTranslationCode) {
     if (data.newCode.trim() === data.oldCode.trim()) return;
+    this.translations[data.loading]["loading"] = "saving";
     try {
       const re = Api.changeTranslationCode(data);
+      this.translations[data.loading]["loading"] = "saved";
+      for (const [key, value] of Object.entries(this.translations)) {
+        if (value.code === data.oldCode) {
+          this.translations[key].code = data.newCode;
+        }
+      }
+      setTimeout(() => {
+        delete this.translations[data.loading]["loading"];
+        console.log("translation updated");
+      }, 400);
     } catch (e) {
       alert(e);
     }
